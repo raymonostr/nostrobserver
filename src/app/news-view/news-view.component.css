@@ -1,0 +1,43 @@
+div.button-row span.title {
+  font-weight: bold;
+  margin-right: 1em;
+}
+div.button-row button {
+  margin-right: .5em;
+}
+
+div.button-row {
+  background-color: #c28458;
+  margin: 1em 1em .5em 1em;
+  border: 1px solid #b27448;
+  padding: .4em 1em;
+  border-radius: 6px;
+}
+
+div.newsview {
+  background-color: #333435;
+  font-family: Arial, sans-serif;
+  margin: 1em;
+  border: 1px solid #595926;
+  padding: 1em;
+  border-radius: 6px;
+}
+
+div.newsview div.content div.seperator {
+  border-bottom: 1px solid #535455;
+  width: 70%;
+  margin: .4em auto 0 3em
+}
+
+div.newsview div.content {
+  display: block;
+  margin: .5em 0;
+}
+
+div.newsview span.direction {
+  padding: 0 0.2em;
+}
+
+div.newsview span.meta {
+  font-size: 80%;
+}
