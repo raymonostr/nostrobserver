@@ -2,7 +2,7 @@ import {Event} from "nostr-tools/lib/types/event";
 
 
 export enum SubsKind {
-  AUTHOR, MENTION
+  AUTHOR, MENTION, ZAP
 }
 
 export interface NostrEvent {

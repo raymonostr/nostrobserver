@@ -20,6 +20,7 @@
     "@angular/platform-browser": "^16.2.0",
     "@angular/platform-browser-dynamic": "^16.2.0",
     "@angular/router": "^16.2.0",
+    "@gandlaf21/bolt11-decode": "^3.0.6",
     "@nostr-connect/connect": "^0.4.0",
     "nostr-tools": "^1.17.0",
     "rxjs": "~7.8.0",
