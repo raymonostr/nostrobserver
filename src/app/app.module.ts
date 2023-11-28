@@ -7,8 +7,10 @@ import {NewsViewComponent} from './news-view/news-view.component';
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from '@angular/material/button';
 import {MatDividerModule} from '@angular/material/divider';
-import {MatDialog, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
-import { ProfileSelectorComponent } from './profile-selector/profile-selector.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import {ProfileSelectorComponent} from './profile-selector/profile-selector.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import {MatInputModule} from "@angular/material/input";
 
 @NgModule({
   declarations: [
@@ -21,7 +23,7 @@ import { ProfileSelectorComponent } from './profile-selector/profile-selector.co
     BrowserModule,
     MatButtonModule, MatDialogModule,
     MatDividerModule,
-    MatIconModule
+    MatIconModule, ReactiveFormsModule, MatInputModule
   ],
   providers: [],
   bootstrap: [AppComponent]

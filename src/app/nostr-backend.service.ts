@@ -72,7 +72,7 @@ export class NostrBackendService {
   subscribeAtRelay(relay: Relay, kind: SubsKind) {
     let since = Math.floor(Date.now() / 1000) - (24 * INITIAL_DAYS * 3600)
     let npubs: string[] = []
-    let filters = []
+    let filters: any[] = []
     switch (kind) {
       case SubsKind.AUTHOR:
         this.observes.forEach((o) => {
@@ -124,10 +124,16 @@ export class NostrBackendService {
     })
     sub.on('eose', () => {
       console.log("got EOSE - waiting now for realtime events")
+      this.broadcastNewEvent(undefined, relay, SubsKind.EOSE)
     })
   }
 
   private broadcastNewEvent(event: any, relay: Relay, subsKind: SubsKind) {
+    if (subsKind == SubsKind.EOSE) {
+      this.followers.forEach((o) => o.next(
+        {event: undefined, relayUrl: relay.url, subsKind: subsKind}
+      ))
+    }
     if (!this.knownEventIds.has(event.id)) {
       this.knownEventIds.add(event.id)
       // console.log('we got an event:', event)

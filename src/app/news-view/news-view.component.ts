@@ -4,7 +4,7 @@ import {Observer} from "rxjs";
 import {NostrEvent, SubsKind} from "../model/nostr-event";
 import {ObservedProfiles} from "../model/observed-profiles";
 import {formatDate} from "@angular/common";
-import {MatDialog} from "@angular/material/dialog";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {ProfileSelectorComponent} from "../profile-selector/profile-selector.component";
 import {NostrHelper} from "../nostr-helper";
 import {decode} from "@gandlaf21/bolt11-decode"
@@ -44,6 +44,13 @@ export class NewsViewComponent {
   }
 
   onEvent(event: NostrEvent) {
+    // resort on EOSE
+    if (event.subsKind == SubsKind.EOSE) {
+      console.log("sorting on EOSE")
+      this.texts = this.texts.sort((a, b) => a.timestamp_unix < b.timestamp_unix ? 1 : -1)
+      return
+    }
+    if (event.event == undefined) return;
     console.log("got new event kind " + event.event.kind + " text : " + event.event.content)
     const msg: Msg = {
       content: event.event.content,
@@ -78,13 +85,13 @@ export class NewsViewComponent {
       if (this.nostrBackendService.hasObservedProfile(sender)) {
         msg.observe = this.nostrBackendService.getObservedProfile(sender)
         msg.msgKind = MsgKind.outgoing
-        msg.content = Math.floor((0 + amount.value) / 1000) + " sats to " + receiver.substring(0, 6) + "..."
+        msg.content = Math.floor((0 + amount.value) / 1000) + " sats ⚡ to " + receiver.substring(0, 6) + "..."
       } else {
         if (this.nostrBackendService.hasObservedProfile(receiver)) {
           msg.observe = this.nostrBackendService.getObservedProfile(receiver)
         }
         msg.msgKind = MsgKind.incoming
-        msg.content = Math.floor((0 + amount.value) / 1000) + " sats from " + sender.substring(0, 6) + "..."
+        msg.content = Math.floor((0 + amount.value) / 1000) + " sats ⚡ from " + sender.substring(0, 6) + "..."
       }
     }
 
@@ -97,7 +104,12 @@ export class NewsViewComponent {
   }
 
   onProfilesButtonPress() {
-    this.modalDialog.open(ProfileSelectorComponent)
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+
+    this.modalDialog.open(ProfileSelectorComponent, dialogConfig)
   }
 
   private onError(err: any) {

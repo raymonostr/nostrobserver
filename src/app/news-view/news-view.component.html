@@ -10,7 +10,7 @@
   </button>
 </div>
 <div class="newsview">
-  <div *ngFor="let t of texts" class="content" style="color:{{t.observe.display_color}}">
+  <div *ngFor="let t of texts" class="content" [ngStyle]="{ 'color': t.observe.display_color }">
     <span class="meta">{{ t.timestamp_str }} : {{ t.observe.alias}}</span>
     <span *ngIf="t.msgKind == MsgKind.outgoing" class="direction">&#x276F;</span>
     <span *ngIf="t.msgKind == MsgKind.incoming" class="direction">&#x276E;</span>

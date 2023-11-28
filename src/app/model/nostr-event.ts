@@ -2,11 +2,11 @@ import {Event} from "nostr-tools/lib/types/event";
 
 
 export enum SubsKind {
-  AUTHOR, MENTION, ZAP
+  EOSE, AUTHOR, MENTION, ZAP
 }
 
 export interface NostrEvent {
   relayUrl: string
-  event: Event
+  event: Event | undefined
   subsKind: SubsKind
 }
