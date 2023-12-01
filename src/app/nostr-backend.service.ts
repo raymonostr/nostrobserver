@@ -4,7 +4,9 @@ import {Relay} from "nostr-tools/lib/types/relay";
 import {ObservedProfiles} from "./model/observed-profiles"
 import {Observer} from "rxjs";
 import {NostrEvent, SubsKind} from "./model/nostr-event";
+import {HttpClient} from "@angular/common/http";
 
+const SETTINGS_KEY = 'nostrobs';
 const INITIAL_DAYS: number = 3
 
 @Injectable({
@@ -16,59 +18,65 @@ export class NostrBackendService {
   knownEventIds: Set<string> = new Set()
   observes: Map<string, ObservedProfiles> = new Map();
   followers: Set<Observer<NostrEvent>> = new Set()
+  profiles: Map<string, Map<string, ObservedProfiles>> = new Map();
+  activeProfile: string
 
-  constructor() {
+  constructor(private httpClient: HttpClient) {
 
-    const ray = new ObservedProfiles("c47e92ddbb45f35ff8d821c37fdf211eb57179c1a36760b8d2638e6f5c577873",
-      "https://image.nostr.build/fb289b3c01cf57f7baf473e8d0b6a35e7882123e04b03dd4a66a5d7ae164f64e.jpg",
-      "raymon@nostrich.house", true, true, true)
-    ray.alias = "ray"
-    this.observes.set("c47e92ddbb45f35ff8d821c37fdf211eb57179c1a36760b8d2638e6f5c577873", ray)
+    const profiles = localStorage.getItem(SETTINGS_KEY+":profiles")
+    this.activeProfile = localStorage.getItem(SETTINGS_KEY+":activeProfile") || "default"
+    if (profiles) {
+      this.profiles = JSON.parse(profiles)
+    } else {
+      // set some defaults for new installs
+      const ray = new ObservedProfiles("c47e92ddbb45f35ff8d821c37fdf211eb57179c1a36760b8d2638e6f5c577873",
+        "https://image.nostr.build/fb289b3c01cf57f7baf473e8d0b6a35e7882123e04b03dd4a66a5d7ae164f64e.jpg",
+        "raymon@nostrich.house", true, true, true)
+      ray.alias = "ray"
+      this.observes.set("c47e92ddbb45f35ff8d821c37fdf211eb57179c1a36760b8d2638e6f5c577873", ray)
 
-    const sidd = new ObservedProfiles("5c7d484b5dc652992510b358dba3ad0b5594ac668e26a053982d4a3ce1ba5414",
-      "https://media.nostr.band/thumbs/5414/5c7d484b5dc652992510b358dba3ad0b5594ac668e26a053982d4a3ce1ba5414-picture-192",
-      "siddhartha@nostrich.house", true, true, true)
-    sidd.display_color = "chocolate"
-    sidd.alias = "siddharta"
-    this.observes.set("5c7d484b5dc652992510b358dba3ad0b5594ac668e26a053982d4a3ce1ba5414", sidd)
-    // TODO: load observes from localstorage
+      const sidd = new ObservedProfiles("5c7d484b5dc652992510b358dba3ad0b5594ac668e26a053982d4a3ce1ba5414",
+        "https://media.nostr.band/thumbs/5414/5c7d484b5dc652992510b358dba3ad0b5594ac668e26a053982d4a3ce1ba5414-picture-192",
+        "siddhartha@nostrich.house", true, true, true)
+      sidd.display_color = "chocolate"
+      sidd.alias = "siddharta"
+      this.observes.set("5c7d484b5dc652992510b358dba3ad0b5594ac668e26a053982d4a3ce1ba5414", sidd)
+      this.profiles.set("default", this.observes)
+    }
 
-    let relay_urls = [
-      "wss://nostr.mom",
-      "wss://nostr-pub.wellorder.net",
-      "wss://relay.damus.io",
-      "wss://nos.lol",
-      "wss://relay.kiatsu.world",
-      "wss://soloco.nl",
-      "wss://relay.lacosanostr.com",
-      "wss://nostrue.com",
-      "wss://nostr.einundzwanzig.space",
-      "wss://bitcoiner.social",
-      "wss://relay.nostr.bg",
-      "wss://nostr.orangepill.dev",
-    ]
     // TODO: load relay_urls from localstorage
-
-    relay_urls.forEach((u) => {
-      let relay = relayInit(u)
-      this.relays.push(relay)
-      relay.on('connect', () => {
-        console.debug(`connected to ${relay.url}`)
-      })
-      relay.on('disconnect', () => {
-        console.debug(`disconnected from ${relay.url}`)
-      })
-      relay.on('error', () => {
-        console.debug(`failed to connect to ${relay.url}`)
-      })
-      relay.connect().then(() => {
-        this.subscribeAtRelay(relay, SubsKind.AUTHOR)
-        this.subscribeAtRelay(relay, SubsKind.ZAP)
-        this.subscribeAtRelay(relay, SubsKind.MENTION)
-      })
-    })
+    this.loadDefaultRelays()
   }
 
+  getProfiles() {
+    return this.profiles
+  }
+
+  loadDefaultRelays() {
+    this.httpClient.get('assets/default_relays.txt', {responseType: 'text'})
+        .subscribe(data => {
+          console.log(data)
+          var relay_urls = data.split("\n")
+          relay_urls.forEach((u) => {
+            let relay = relayInit(u)
+            this.relays.push(relay)
+            relay.on('connect', () => {
+              console.debug(`connected to ${relay.url}`)
+            })
+            relay.on('disconnect', () => {
+              console.debug(`disconnected from ${relay.url}`)
+            })
+            relay.on('error', () => {
+              console.debug(`failed to connect to ${relay.url}`)
+            })
+            relay.connect().then(() => {
+              this.subscribeAtRelay(relay, SubsKind.AUTHOR)
+              this.subscribeAtRelay(relay, SubsKind.ZAP)
+              this.subscribeAtRelay(relay, SubsKind.MENTION)
+            })
+          })
+        });
+  }
   subscribeAtRelay(relay: Relay, kind: SubsKind) {
     let since = Math.floor(Date.now() / 1000) - (24 * INITIAL_DAYS * 3600)
     let npubs: string[] = []

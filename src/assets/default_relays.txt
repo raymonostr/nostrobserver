@@ -1,0 +1,17 @@
+wss://nostr.mom
+wss://nostr-pub.wellorder.net
+wss://relay.damus.io
+wss://nos.lol
+wss://soloco.nl
+wss://relay.lacosanostr.com
+wss://nostrue.com
+wss://nostr.einundzwanzig.space
+wss://nostr.bitcoiner.social
+wss://relay.nostr.bg
+wss://nostr.orangepill.dev
+wss://nostr.oxtr.dev
+wss://nostr.wine
+wss://atlas.nostr.land
+wss://eden.nostr.land
+wss://relay.snort.social
+wss://puravida.nostr.land

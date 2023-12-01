@@ -11,6 +11,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {ProfileSelectorComponent} from './profile-selector/profile-selector.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -22,7 +23,7 @@ import {MatInputModule} from "@angular/material/input";
     CommonModule,
     BrowserModule,
     MatButtonModule, MatDialogModule,
-    MatDividerModule,
+    MatDividerModule, HttpClientModule,
     MatIconModule, ReactiveFormsModule, MatInputModule
   ],
   providers: [],
